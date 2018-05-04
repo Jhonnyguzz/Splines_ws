@@ -189,7 +189,17 @@ void splineCubicaNatural(int controlPoints, float x[], float y[], float z[]) {
     }
   }
   
-} 
+}
+  
+void changePoints() {
+  interpolator = new Interpolator(scene, new Frame());
+  for (int i = 0; i < points; i++) {
+    Node ctrlPoint = new OrbitNode(scene);
+    ctrlPoint.randomize();
+    interpolator.addKeyFrame(ctrlPoint);
+  }
+}  
+  
   
 void keyPressed() {
   if (key == ' ')
@@ -198,4 +208,6 @@ void keyPressed() {
     drawGrid = !drawGrid;
   if (key == 'c')
     drawCtrl = !drawCtrl;
+  if (key == 'r')
+    changePoints();
 }
