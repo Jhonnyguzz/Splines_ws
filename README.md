@@ -20,9 +20,14 @@ Máximo 3.
 
 Complete la tabla:
 
-| Integrante | github nick |
-|------------|-------------|
-|            |             |
+|    Integrante    | github nick |
+|------------------|-------------|
+| Eduardo Galeano  | cegard     |
+| Jhonatan Guzmán  | Jhonnyguzz    |
+
+## Referencias
+
+[curvas cúbicas naturales](http://www.inf-cr.uclm.es/www/cglez/downloads/docencia/AC/splines.pdf)
 
 ## Entrega
 
