@@ -74,9 +74,9 @@ void draw() {
   // for(Frame frame : interpolator.keyFrames())
   //   frame.position();
   
-  double x[] = new double[points];
-  double y[] = new double[points];
-  double z[] = new double[points];
+  float x[] = new float[points];
+  float y[] = new float[points];
+  float z[] = new float[points];
   
   for (int i = 0; i<interpolator.keyFrames().size(); i++) {
     Frame frame = interpolator.keyFrames().get(i);
@@ -89,6 +89,9 @@ void draw() {
     case 0:
       splineCubicaNatural(points, x, y, z);
       break;
+    case 1:
+      hermite(points, x, y, z);
+      break;
     default:
       break;
   }
@@ -96,16 +99,16 @@ void draw() {
   
 }
 
-void splineCubicaNatural(int controlPoints, double x[], double y[], double z[]) {
+void splineCubicaNatural(int controlPoints, float x[], float y[], float z[]) {
   
   int intervals = points - 1;
   
-  double ax[] = new double[controlPoints], bx[] = new double[controlPoints], cx[] = new double[controlPoints], dx[] = new double[controlPoints];
-  double ay[] = new double[controlPoints], by[] = new double[controlPoints], cy[] = new double[controlPoints], dy[] = new double[controlPoints];
-  double az[] = new double[controlPoints], bz[] = new double[controlPoints], cz[] = new double[controlPoints], dz[] = new double[controlPoints];
+  float ax[] = new float[controlPoints], bx[] = new float[controlPoints], cx[] = new float[controlPoints], dx[] = new float[controlPoints];
+  float ay[] = new float[controlPoints], by[] = new float[controlPoints], cy[] = new float[controlPoints], dy[] = new float[controlPoints];
+  float az[] = new float[controlPoints], bz[] = new float[controlPoints], cz[] = new float[controlPoints], dz[] = new float[controlPoints];
   
-  double deriv[] = new double[controlPoints], gamma[] = new double[controlPoints], omega[] = new double[controlPoints]; 
-  double t, dt = 0;
+  float deriv[] = new float[controlPoints], gamma[] = new float[controlPoints], omega[] = new float[controlPoints]; 
+  float t;
   
   //X
   
@@ -162,17 +165,17 @@ void splineCubicaNatural(int controlPoints, double x[], double y[], double z[]) 
   }
   
   float xpx, ypx, zpx;
-  dt = 1. / (double) 100;
 
   for (int i = 0; i < intervals+1; ++i) {
     
-    float pointx = (float)ax[i] + (float)bx[i] + (float)cx[i] + (float)dx[i];
-    float pointy = (float)ay[i] + (float)by[i] + (float)cy[i] + (float)dy[i];
-    float pointz = (float)az[i] + (float)bz[i] + (float)cz[i] + (float)dz[i];
+    float pointx = ax[i] + bx[i] + cx[i] + dx[i];
+    float pointy = ay[i] + by[i] + cy[i] + dy[i];
+    float pointz = az[i] + bz[i] + cz[i] + dz[i];
     
-    //for (j = 0, t = dt; j < 100; ++j, t+=dt) {
+    t = 0;
     for (float j = 0; j <= 100; j+=1) {
-      t = j*1/100;
+      
+      t += 1.0/100;
       
       xpx = (float)(ax[i]+bx[i]*t+cx[i]*t*t+dx[i]*t*t*t);
       ypx = (float)(ay[i]+by[i]*t+cy[i]*t*t+dy[i]*t*t*t);
@@ -186,9 +189,8 @@ void splineCubicaNatural(int controlPoints, double x[], double y[], double z[]) 
     }
   }
   
+} 
   
-}
-
 void keyPressed() {
   if (key == ' ')
     mode = mode < 3 ? mode+1 : 0;
