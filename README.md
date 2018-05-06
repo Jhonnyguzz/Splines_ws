@@ -27,7 +27,19 @@ Complete la tabla:
 
 ## Referencias
 
-[curvas cúbicas naturales](http://www.inf-cr.uclm.es/www/cglez/downloads/docencia/AC/splines.pdf)
+[Curvas cúbicas naturales y Hermite](http://www.inf-cr.uclm.es/www/cglez/downloads/docencia/AC/splines.pdf)
+[Curva de Bezier (Spline cúbico)](https://visualcomputing.github.io/Curves/#/6/6)
+[Curva de Bezier de Grado 7](https://es.wikipedia.org/wiki/Curva_de_B%C3%A9zier#Generalizaci%C3%B3n)
+
+## README
+
+Con la tecla R se cambian los puntos de control para ver diferentes curvas con diferentes puntos, El modo se cambia con la tecla espacio y el orden es así:
+
+1. Natural
+2. Hermite
+3. Bezier cúbico
+4. Bezier (Función de processing)
+5. Bezier de grado 7 
 
 ## Entrega
 

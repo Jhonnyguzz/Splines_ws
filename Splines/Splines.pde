@@ -87,15 +87,30 @@ void draw() {
   
   switch (mode) {
     case 0:
+      System.out.println("Natural");
       splineCubicaNatural(points, x, y, z);
       break;
     case 1:
+      System.out.println("Hermite");
       hermite(points, x, y, z);
       break;
+    case 2:
+      //Cada cuatro puntos de control
+      System.out.println("Bezier Cubico Implementado");
+      bezierImpl(0, x, y, z);
+      bezierImpl(4, x, y, z);
+      break;
+    case 3:
+      System.out.println("Bezier de processing");
+      bezier(x[0], y[0], z[0], x[1], y[1], z[1], x[2], y[2], z[2], x[3], y[3], z[3]);
+      bezier(x[4], y[4], z[4], x[5], y[5], z[5], x[6], y[6], z[6], x[7], y[7], z[7]);
+      break;
+    case 4:
+      System.out.println("Bezier de grado 7");
+      bezierGrado7(0, x, y, z);
     default:
       break;
   }
-  
   
 }
 
@@ -165,15 +180,18 @@ void splineCubicaNatural(int controlPoints, float x[], float y[], float z[]) {
   }
   
   float xpx, ypx, zpx;
+  float pointx;
+  float pointy;
+  float pointz;
 
   for (int i = 0; i < intervals+1; ++i) {
     
-    float pointx = ax[i] + bx[i] + cx[i] + dx[i];
-    float pointy = ay[i] + by[i] + cy[i] + dy[i];
-    float pointz = az[i] + bz[i] + cz[i] + dz[i];
+    pointx = ax[i] + bx[i] + cx[i] + dx[i];
+    pointy = ay[i] + by[i] + cy[i] + dy[i];
+    pointz = az[i] + bz[i] + cz[i] + dz[i];
     
     t = 0;
-    for (float j = 0; j <= 100; j+=1) {
+    for (float j = 0; j <= 100; ++j) {
       
       t += 1.0/100;
       
@@ -188,9 +206,117 @@ void splineCubicaNatural(int controlPoints, float x[], float y[], float z[]) {
       pointz = zpx;
     }
   }
-  
 }
+
+void hermite(int controlPoints, float x[], float y[], float z[]) {
+ 
+  //4 Valores 
+  float[] xk_x = new float[controlPoints], xk1_x = new float[controlPoints], dk_x = new float[controlPoints], dk1_x = new float[controlPoints];
+  float[] xk_y = new float[controlPoints], xk1_y = new float[controlPoints], dk_y = new float[controlPoints], dk1_y = new float[controlPoints];
+  float[] xk_z = new float[controlPoints], xk1_z = new float[controlPoints], dk_z = new float[controlPoints], dk1_z = new float[controlPoints];
   
+  for (int i = 0; i < controlPoints-1; ++i) {
+  
+      //Pk y Pk+1
+      xk_x[i] = x[i];
+      xk1_x[i] = x[i+1];
+      xk_y[i] = y[i];
+      xk1_y[i] = y[i+1];
+      xk_z[i] = z[i];
+      xk1_z[i] = z[i+1];
+      
+      //Derivs Dk y Dk+1
+      if (i == 0) {
+        dk_x[i] = x[i+1] - x[i];
+        dk1_x[i] = (x[i+2] - x[i])/2;
+        dk_y[i] = y[i+1] - y[i];
+        dk1_y[i] = (y[i+2] - y[i])/2;
+        dk_z[i] = z[i+1] - z[i];
+        dk1_z[i] = (z[i+2] - z[i])/2;
+      }else if (i == controlPoints - 2) {
+        dk_x[i] = (x[i+1] - x[i-1])/2;
+        dk1_x[i] = (x[i+1] - x[i]);
+        dk_y[i] = (y[i+1] - y[i-1])/2;
+        dk1_y[i] = (y[i+1] - y[i]);
+        dk_z[i] = (z[i+1] - z[i-1])/2;
+        dk1_z[i] = (z[i+1] - z[i]);
+      }else {
+        dk_x[i] = (x[i+1] - x[i-1])/2;
+        dk1_x[i] = (x[i+2] - x[i])/2;
+        dk_y[i] = (y[i+1] - y[i-1])/2;
+        dk1_y[i] = (y[i+2] - y[i])/2;
+        dk_z[i] = (z[i+1] - z[i-1])/2;
+        dk1_z[i] = (z[i+2] - z[i])/2;
+      }
+      
+      
+      float xa = x[i], ya = y[i], za = z[i];
+      float xb,yb,zb;
+      float t = 0;
+      
+      for (float j = 0; j<=100; ++j) {
+        t += 1.0/100;
+        
+        xb = xk_x[i] * (2*t*t*t-3*t*t+1) + dk_x[i] * (t*t*t - 2*t*t + t) + xk1_x[i] * (-2*t*t*t+3*t*t) + dk1_x[i] * (t*t*t-t*t);
+        yb = xk_y[i] * (2*t*t*t-3*t*t+1) + dk_y[i] * (t*t*t - 2*t*t + t) + xk1_y[i] * (-2*t*t*t+3*t*t) + dk1_y[i] * (t*t*t-t*t);
+        zb = xk_z[i] * (2*t*t*t-3*t*t+1) + dk_z[i] * (t*t*t - 2*t*t + t) + xk1_z[i] * (-2*t*t*t+3*t*t) + dk1_z[i] * (t*t*t-t*t);
+        
+        line(xa, ya, za, xb, yb ,zb); 
+        
+        xa = xb;
+        ya = yb;
+        za = zb;
+        
+      }
+  }
+}
+
+void bezierImpl(int i, float x[], float y[], float z[]) {
+  
+    //https://visualcomputing.github.io/Curves/#/6/6
+    float xa = x[i], ya = y[i], za = z[i];
+    float xb,yb,zb;
+    float t = 0;
+    for (float j = 0; j<=100; ++j) {
+      t += 1.0/100;
+
+      xb = x[i]*(1-t)*(1-t)*(1-t) + x[i+1]*3*t*(1-t)*(1-t) + x[i+2]*3*t*t*(1-t) + x[i+3]*(t*t*t);
+      yb = y[i]*(1-t)*(1-t)*(1-t) + y[i+1]*3*t*(1-t)*(1-t) + y[i+2]*3*t*t*(1-t) + y[i+3]*(t*t*t);
+      zb = z[i]*(1-t)*(1-t)*(1-t) + z[i+1]*3*t*(1-t)*(1-t) + z[i+2]*3*t*t*(1-t) + z[i+3]*(t*t*t);
+
+      line(xa, ya, za, xb, yb ,zb); 
+      
+      xa = xb;
+      ya = yb;
+      za = zb;
+    }
+}
+
+void bezierGrado7(int i, float x[], float y[], float z[]) {
+  
+    //https://es.wikipedia.org/wiki/Curva_de_B%C3%A9zier#Generalizaci%C3%B3n
+    float xa = x[i], ya = y[i], za = z[i];
+    float xb,yb,zb;
+    float t = 0;
+    for (float j = 0; j<=100; ++j) {
+      t += 1.0/100;
+
+      xb = x[i]*pow((1-t),7) + 7*x[i+1]*t*pow((1-t),6) + 21*x[i+2]*pow(t,2)*pow((1-t),5) + 35*x[i+3]*pow(t,3)*pow((1-t),4) 
+          + 35*x[i+4]*pow(t,4)*pow((1-t),3) + 21*x[i+5]*pow(t,5)*pow((1-t),2) + 7*x[i+6]*pow(t,6)*(1-t) + x[i+7]*pow(t,7);
+      yb = y[i]*pow((1-t),7) + 7*y[i+1]*t*pow((1-t),6) + 21*y[i+2]*pow(t,2)*pow((1-t),5) + 35*y[i+3]*pow(t,3)*pow((1-t),4) 
+          + 35*y[i+4]*pow(t,4)*pow((1-t),3) + 21*y[i+5]*pow(t,5)*pow((1-t),2) + 7*y[i+6]*pow(t,6)*(1-t) + y[i+7]*pow(t,7);
+      zb = z[i]*pow((1-t),7) + 7*z[i+1]*t*pow((1-t),6) + 21*z[i+2]*pow(t,2)*pow((1-t),5) + 35*z[i+3]*pow(t,3)*pow((1-t),4) 
+          + 35*z[i+4]*pow(t,4)*pow((1-t),3) + 21*z[i+5]*pow(t,5)*pow((1-t),2) + 7*z[i+6]*pow(t,6)*(1-t) + z[i+7]*pow(t,7);
+      
+      line(xa, ya, za, xb, yb ,zb); 
+      
+      xa = xb;
+      ya = yb;
+      za = zb;
+    }
+}
+
+
 void changePoints() {
   interpolator = new Interpolator(scene, new Frame());
   for (int i = 0; i < points; i++) {
@@ -203,7 +329,7 @@ void changePoints() {
   
 void keyPressed() {
   if (key == ' ')
-    mode = mode < 3 ? mode+1 : 0;
+    mode = mode < 4 ? mode+1 : 0;
   if (key == 'g')
     drawGrid = !drawGrid;
   if (key == 'c')
